@@ -13,6 +13,5 @@ public interface AbstractDAO <T extends Entity>{
 	public abstract boolean delete(int id) throws DAOException;
 	public abstract boolean create(T entity) throws DAOException;
 	public abstract T update(T entity) throws DAOException;
-	//public abstract void close(PreparedStatement ps) throws  DAOException;
 
 }
