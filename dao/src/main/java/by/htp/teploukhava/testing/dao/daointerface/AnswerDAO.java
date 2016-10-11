@@ -12,7 +12,6 @@ public interface AnswerDAO extends AbstractDAO<Answer> {
 	public List<Answer> findQuestionAnswers(int questionId) throws DAOException;
 
 	public int updateAnswer(Answer answer, String content, Boolean rightAnswer) throws DAOException;
-
-
+//Some
 
 }
