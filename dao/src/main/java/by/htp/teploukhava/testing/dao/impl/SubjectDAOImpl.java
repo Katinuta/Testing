@@ -2,139 +2,117 @@ package by.htp.teploukhava.testing.dao.impl;
 
 
 import by.htp.telpoukhava.testing.entities.Subject;
-import by.htp.teploukhava.testing.dao.daointerface.SubjectDAO;
+import by.htp.telpoukhava.testing.entities.SubjectDTO;
+import by.htp.teploukhava.testing.dao.daointerface.AbstractDAO;
 import by.htp.teploukhava.testing.exception.DAOException;
+import by.htp.teploukhava.testing.managers.HibernateUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.transform.Transformers;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 /**
  * Class implements methods of interface SubjectDAO, ovveride this, contains
  * constructor
  */
 
-public class SubjectDAOImpl implements SubjectDAO {
+public class SubjectDAOImpl implements AbstractDAO<Subject> {
 
 	private static final Logger logger= LogManager.getLogger(SubjectDAOImpl.class);
-	public final static String SQL_INSERT_SUBJECT="INSERT INTO subject (name) VALUES(?)";
-	public final static String SQL_SELECT_SUBJECT="SELECT subject_id,name FROM subject";
-	public final static String SQL_SELECT_SUBJECT_BY_ID="SELECT * FROM subject WHERE  subject_id=?";
-	private Connection connection;
 	private static SubjectDAOImpl instance;
 
-	private SubjectDAOImpl(Connection connection){
 
-		this.connection = connection;
-	}
-
-	public static synchronized SubjectDAOImpl getInstance(Connection connection){
+	public static synchronized SubjectDAOImpl getInstance(){
 		if(instance==null){
-			instance=new SubjectDAOImpl(connection);
-		}else{
-			instance.connection=connection;
+			instance=new SubjectDAOImpl();
 		}
 		return instance;
 	}
 
 
 	public List<Subject> findAll() throws DAOException {
-		List<Subject> list=new ArrayList<>();
-	//	PreparedStatement ps=null;
-	//	Connection connection =  null;
-		try (PreparedStatement ps=connection.prepareStatement(SQL_SELECT_SUBJECT)){
-	//		connection=ConnectorDB.getInstance().getConnection();
-		//	ps=connection.prepareStatement(SQL_SELECT_SUBJECT);
-			try(ResultSet resultSet=ps.executeQuery()) {
-				while (resultSet.next()) {
-					Subject subject = new Subject();
-					subject.setSubjectId(resultSet.getInt("subject_id"));
-					subject.setName(resultSet.getString("name"));
-					list.add(subject);
-				}
-			}
-			logger.info("All subjects found");
-		} catch (SQLException e) {
-			logger.error("Exception in the method findAll"+ SubjectDAOImpl.class.getName());
-			throw new DAOException("Exception in the method findAll "+e.getMessage());
-	//	} catch (PropertyVetoException e) {
-	//		e.printStackTrace();
-//		} finally{
-//			close(ps);
+		List<Subject> list=null;
+		try{
+			Session session=HibernateUtil.getSession();
+			Query query=session.createQuery("SELECT S FROM Subject S ORDER BY S.name");
+			System.out.println( "findall " +Subject.class+"  " + session.hashCode());
+			list=query.list();
+		}catch (HibernateException e) {
+			throw new DAOException("Exception in findall dao subject " + e.getMessage());
 		}
 		return list;
 	}
 
-	public boolean delete(int id) {
-		return false;
-	}
-
-	public boolean create(Subject entity) throws DAOException {
-		boolean flag;
-	//	PreparedStatement ps=null;
-	//	Connection connection =  null;
-		try(PreparedStatement ps=connection.prepareStatement(SQL_INSERT_SUBJECT)) {
-	//		connection=ConnectorDB.getInstance().getConnection();
-	//		ps=connection.prepareStatement(SQL_INSERT_SUBJECT);
-		//	System.out.println(entity.getName());
-			ps.setString(1, entity.getName());
-			ps.executeUpdate();
-			flag=true;
-			logger.info("Subject created");
-		} catch (SQLException e) {
-			logger.error("Exception in the method create"+ SubjectDAOImpl.class.getName());
-			throw new DAOException("Exception in the method create "+e.getMessage());
-//		} catch (PropertyVetoException e) {
-//			e.printStackTrace();
-//		} finally{
-//			close(ps);
+	public boolean delete(int id) throws DAOException {
+		boolean flag=false;
+		try{
+			Session session = HibernateUtil.getSession();
+			Subject subject=(Subject) session.get(Subject.class,id);
+			System.out.println( " delete dao " +subject.getClass().getName()+"  " + session.hashCode());
+			session.delete(subject);
+			flag = true;
+		}catch (HibernateException e) {
+			throw new DAOException("Exception in delete dao subject " + e.getMessage());
 		}
 		return flag;
 	}
 
 	@Override
-	public Subject update(Subject entity) {
-		return null;
+	public boolean create(Subject entity) throws DAOException {
+		boolean flag=false;
+		try{
+			Session session = HibernateUtil.getSession();
+			System.out.println( "create dao " +entity.getClass()+"  " + session.hashCode());
+			session.save(entity);
+			flag = true;
+		}catch (HibernateException e) {
+			throw new DAOException("Exception in create dao subject " + e.getMessage());
+		}
+		return flag;
 	}
-	
-	public Subject findSubjectById(int subjectId) throws DAOException {
-		Subject subject=new Subject();
-//		PreparedStatement ps=null;
-//		Connection connection =  null;
-		try (PreparedStatement ps=connection.prepareStatement(SQL_SELECT_SUBJECT_BY_ID)){
-//			connection=ConnectorDB.getInstance().getConnection();
-//			ps=connection.prepareStatement(SQL_SELECT_SUBJECT_BY_ID);
-			ps.setInt(1,subjectId );
-			try(ResultSet resultSet=ps.executeQuery()) {
-				while (resultSet.next()) {
-					subject.setSubjectId(resultSet.getInt("subject_id"));
-					subject.setName(resultSet.getString("name"));
-				}
-			}
-			logger.info("Subject founded by id");
-		} catch (SQLException e) {
-			logger.error("Exception in the method findSubjectById"+ SubjectDAOImpl.class.getName());
-			throw new DAOException("Exception in the method findSubjectById "+e.getMessage());
-//		} catch (PropertyVetoException e) {
-//			e.printStackTrace();
-//		} finally{
-//			close(ps);
+
+	@Override
+	public Subject update(Subject entity) throws DAOException {
+		try{
+			Session session = HibernateUtil.getSession();
+			System.out.println( " update dao " +entity.getClass().getName()+"  " + session.hashCode());
+			session.saveOrUpdate(entity);
+		}catch (HibernateException e) {
+			throw new DAOException("Exception in update dao subject " + e.getMessage());
+		}
+		return entity;
+	}
+
+	@Override
+	public Subject find(int id) throws DAOException {
+		Subject subject=null;
+		try{
+			Session session=HibernateUtil.getSession();
+			System.out.println( " find dao " +Subject.class+"  " + session.hashCode());
+			subject=(Subject) session.get(Subject.class,id);
+		}catch (HibernateException e) {
+			throw new DAOException("Exception in find dao subject " + e.getMessage());
 		}
 		return subject;
 	}
-	
-//	public void close(PreparedStatement ps) throws DAOException {
-//		try {
-//			if (ps != null) {
-//				ps.close();
-//			}
-//		} catch (SQLException e) {
-//			logger.error("Exception close statement in  "+ SubjectDAOImpl.class.getName());
-//			throw new DAOException("Exception close statement in "+e.getMessage());
-//		}
-//	}
+	public List<SubjectDTO> findByPage(int recordsPerPage,int numberPage) throws DAOException {
+		List<SubjectDTO> list=null;
+		try{
+			Session session=HibernateUtil.getSession();
+			Query query=session.createQuery("SELECT S.subjectId as subjectId, S.name as name" +
+						" FROM Subject S ORDER BY S.name");
+			query.setResultTransformer(Transformers.aliasToBean(SubjectDTO.class));
+			System.out.println( "findByPage " +Subject.class+"  " + session.hashCode());
+			query.setFirstResult((numberPage-1)*recordsPerPage);
+			query.setMaxResults(recordsPerPage);
+			list=query.list();
+		}catch (HibernateException e) {
+			throw new DAOException("Exception in findByPage dao subject " + e.getMessage());
+		}
+		return list;
+	}
+
 }

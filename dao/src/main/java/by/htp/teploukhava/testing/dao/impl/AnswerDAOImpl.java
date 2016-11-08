@@ -1,151 +1,119 @@
 package by.htp.teploukhava.testing.dao.impl;
 
 import by.htp.telpoukhava.testing.entities.Answer;
-import by.htp.teploukhava.testing.dao.daointerface.AnswerDAO;
+import by.htp.telpoukhava.testing.entities.Question;
+import by.htp.teploukhava.testing.dao.daointerface.AbstractDAO;
 import by.htp.teploukhava.testing.exception.DAOException;
+import by.htp.teploukhava.testing.managers.HibernateUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**Class implements methods of interface AnswerDAO, ovveride this, contains constructor */
 
-public class AnswerDAOImpl implements AnswerDAO {
+public class AnswerDAOImpl implements AbstractDAO<Answer> {
 
     private static final Logger logger= LogManager.getLogger(AnswerDAOImpl.class);
-	final static String SQL_INSERT_ANSWER = "INSERT INTO answer(question_id,content,right_answer) VALUES(?,?,?)";
-	final static String SQL_SELECT_QUESTION_ANSWERS = "SELECT * FROM answer WHERE question_id=?";
 	final static String SQL_UPDATE_ANSWER = "UPDATE answer SET answer.content=?,answer.right_answer=? WHERE answer.answer_id=?";
-	final static String SQl_DELETE_ANSWER_BY_QUESTION_ID = "DELETE FROM answer WHERE question_id=?";
 	private Connection connection;
 	private static AnswerDAOImpl instance;
 
-	private AnswerDAOImpl(Connection connection){
+	private AnswerDAOImpl(){
 
-		this.connection = connection;
 	}
 
-	public static synchronized AnswerDAOImpl getInstance(Connection connection){
+	public static synchronized AnswerDAOImpl getInstance(){
 		if(instance==null){
-			instance=new AnswerDAOImpl(connection);
-		}else{
-			instance.connection=connection;
+			instance=new AnswerDAOImpl();
 		}
 		return instance;
 	}
 
 
 	public List<Answer> findAll() {
-		return null;
+		Session session=HibernateUtil.getSession();
+		Query query=session.createQuery("FROM Answer ");
+		System.out.println( " delete dao " +Answer.class+"  " + session.hashCode());
+		List<Answer> results=query.list();
+		return results;
 	}
 
+	@Override
 	public boolean delete(int id) throws DAOException {
-		boolean flag ;
-		//PreparedStatement ps = null;
-	//	Connection connection =  null;
-		try(PreparedStatement ps=connection.prepareStatement(SQl_DELETE_ANSWER_BY_QUESTION_ID)) {
-		//	connection=ConnectorDB.getInstance().getConnection();
-		//	ps = connection.prepareStatement(SQl_DELETE_ANSWER_BY_QUESTION_ID);
-			ps.setInt(1, id);
-			ps.executeUpdate();
+		boolean flag=false;
+		try{
+			Session session = HibernateUtil.getSession();
+			Answer answer=(Answer) session.get(Answer.class,id);
+			System.out.println( " delete dao " +answer.getClass().getName()+"  " + session.hashCode());
+			session.delete(answer);
 			flag = true;
-            logger.info("Answers of the question deleted");
-		} catch (SQLException e) {
-            logger.error("Exception in the method delete"+ QuestionDAOImpl.class.getName());
-            throw new DAOException("Exception in the method delete "+e.getMessage());
-
-//		} catch (PropertyVetoException e) {
-//			e.printStackTrace();
-//		} finally {
-//			close(ps);
+		}catch (HibernateException e){
+			throw new DAOException("Exception in delete dao answer "+ e.getMessage());
 		}
 		return flag;
 	}
 
+	@Override
 	public boolean create(Answer entity) throws DAOException {
-		boolean flag = false;
-//		PreparedStatement ps = null;
-//		Connection connection =  null;
-		try (PreparedStatement ps = connection.prepareStatement(SQL_INSERT_ANSWER)){
-		//	connection=ConnectorDB.getInstance().getConnection();
-//			ps = connection.prepareStatement(SQL_INSERT_ANSWER);
-			ps.setInt(1, entity.getQuestionId());
-			ps.setString(2, entity.getContent());
-			ps.setBoolean(3, entity.isRightAnswer());
-			ps.executeUpdate();
+		boolean flag=false;
+		try{
+			Session session = HibernateUtil.getSession();
+			System.out.println( " create dao " +entity.getClass()+"  " + session.hashCode());
+			session.save(entity);
 			flag = true;
-            logger.info("Answer for the question created");
-		} catch (SQLException e) {
-            logger.error("Exception in the method create"+ QuestionDAOImpl.class.getName());
-            throw new DAOException("Exception in the method create "+e.getMessage());
-
-//		} catch (PropertyVetoException e) {
-//			e.printStackTrace();
-//		} finally {
-//			close(ps);
+		}catch (HibernateException e){
+			throw new DAOException("Exception in create dao answer "+ e.getMessage());
 		}
 		return flag;
 	}
 
+	@Override
 	public Answer update(Answer entity) throws DAOException {
-//		PreparedStatement ps = null;
-//		Connection connection =  null;
-		try (PreparedStatement ps=connection.prepareStatement(SQL_UPDATE_ANSWER)){
-	//		connection=ConnectorDB.getInstance().getConnection();
-		//	ps = connection.prepareStatement(SQL_UPDATE_ANSWER);
-			ps.setString(1, entity.getContent());
-			ps.setBoolean(2, entity.isRightAnswer());
-			ps.setInt(3, entity.getAnswerId());
-			ps.executeUpdate();
-			logger.info("Answers for question updated");
-		} catch (SQLException e) {
-			logger.error("Exception in the method  update"+ QuestionDAOImpl.class.getName());
-			throw new DAOException("Exception in the method update "+e.getMessage());
-//		} catch (PropertyVetoException e) {
-//			e.printStackTrace();
-//		} finally {
-//			close(ps);
+		try{
+			Session session = HibernateUtil.getSession();
+			System.out.println( " update dao " +entity.getClass().getName()+"  " + session.hashCode());
+			session.saveOrUpdate(entity);
+			return entity;
+		}catch (HibernateException e){
+			throw new DAOException("Exception in update dao answer "+ e.getMessage());
 		}
-		return entity;
 	}
+
+	@Override
+	public Answer find(int id) throws DAOException {
+		Answer answer=null;
+		try{
+			Session session=HibernateUtil.getSession();
+			answer=(Answer) session.get(Answer.class,id);
+		}catch (HibernateException e){
+			throw new DAOException("Exception in find dao answer "+ e.getMessage());
+		}
+		return answer;
+	}
+
 
 	public List<Answer> findQuestionAnswers(int questionId) throws DAOException {
 		List<Answer> list = new ArrayList<>();
-	//	PreparedStatement ps = null;
-	//	Connection connection =  null;
-	//	ResultSet resultSet = null;
-		try(PreparedStatement  ps = connection.prepareStatement(SQL_SELECT_QUESTION_ANSWERS)) {
-		//	connection=ConnectorDB.getInstance().getConnection();
-		//	ps = connection.prepareStatement(SQL_SELECT_QUESTION_ANSWERS);
-			ps.setInt(1, questionId);
-			try(ResultSet resultSet = ps.executeQuery() ){
-				//resultSet = ps.executeQuery();
-				while (resultSet.next()) {
-					Answer answer = new Answer();
-					answer.setAnswerId(resultSet.getInt("answer_id"));
-					answer.setQuestionId(resultSet.getInt("question_id"));
-					answer.setContent(resultSet.getString("content"));
-					answer.setRightAnswer(resultSet.getBoolean("right_answer"));
-					list.add(answer);
-				}
-			}
-		} catch (SQLException e) {
-            logger.error("Exception in the method  findQuestionAnswers"+ QuestionDAOImpl.class.getName());
-            throw new DAOException("Exception in the method findQuestionAnswers "+e.getMessage());
-//		} catch (PropertyVetoException e) {
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				resultSet.close();
-//			} catch (SQLException e) {
-//				e.getMessage();
-//			}
+		try{
+			Session session = HibernateUtil.getSession();
+			System.out.println( " findQuestionAnswers dao " +Answer.class+"  " + session.hashCode());
+			Criteria criteria=session.createCriteria(Question.class);
+			criteria.add(Restrictions.eq("question.questionId",questionId));
+			list=criteria.list();
+		}catch (HibernateException e){
+			throw new DAOException("Exception in findQuestionAnswers dao question "+ e.getMessage());
 		}
+
 		return list;
 	}
 
@@ -173,17 +141,4 @@ public class AnswerDAOImpl implements AnswerDAO {
 		return colCount;
 	}
 
-//	public void close(PreparedStatement ps) throws DAOException {
-//
-//		try {
-//			if (ps != null) {
-//				ps.close();
-//                logger.info("Statement close");
-//			}
-//		} catch (SQLException e) {
-//            logger.error("Exception close statement"+ QuestionDAOImpl.class.getName());
-//            throw new DAOException("Exception close statement "+e.getMessage());
-//		}
-//
-//	}
 }

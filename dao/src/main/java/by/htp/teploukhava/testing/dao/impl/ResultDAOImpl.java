@@ -1,15 +1,16 @@
 package by.htp.teploukhava.testing.dao.impl;
 
 import by.htp.telpoukhava.testing.entities.Result;
-import by.htp.teploukhava.testing.dao.daointerface.ResultDAO;
+import by.htp.teploukhava.testing.dao.daointerface.AbstractDAO;
 import by.htp.teploukhava.testing.exception.DAOException;
+import by.htp.teploukhava.testing.managers.HibernateUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ import java.util.List;
  * constructor
  */
 
-public class ResultDAOImpl implements ResultDAO {
+public class ResultDAOImpl implements AbstractDAO<Result> {
 
     private static final Logger logger= LogManager.getLogger(ResultDAOImpl.class);
 	final static String SQL_INSERT_RESULT = "INSERT INTO result(test_id, user_id, result)VALUES(?,?,?)";
@@ -25,16 +26,13 @@ public class ResultDAOImpl implements ResultDAO {
 	private Connection connection;
 	private static ResultDAOImpl instance;
 
-	private ResultDAOImpl(Connection connection){
+	private ResultDAOImpl(){
 
-		this.connection = connection;
 	}
 
-	public static synchronized ResultDAOImpl getInstance(Connection connection){
+	public static synchronized ResultDAOImpl getInstance(){
 		if(instance==null){
-			instance=new ResultDAOImpl(connection);
-		}else{
-			instance.connection=connection;
+			instance=new ResultDAOImpl();
 		}
 		return instance;
 	}
@@ -47,71 +45,44 @@ public class ResultDAOImpl implements ResultDAO {
 		return false;
 	}
 
+	@Override
 	public boolean create(Result entity) throws DAOException {
-		boolean flag = false;
-//		PreparedStatement ps = null;
-//		Connection connection =  null;
-		try(PreparedStatement ps =connection.prepareCall(SQL_INSERT_RESULT)) {
-		//	connection=ConnectorDB.getInstance().getConnection();
-		//	ps = connection.prepareCall(SQL_INSERT_RESULT);
-			ps.setInt(1, entity.getTestId());
-			ps.setInt(2, entity.getUserId());
-			ps.setInt(3, entity.getResult());
-			ps.executeUpdate();
-            logger.info("Result wrote");
-		} catch (SQLException e) {
-            logger.error("Exception in the method create"+ QuestionDAOImpl.class.getName());
-            throw new DAOException("Exception in the method create "+e.getMessage());
-//		} catch (PropertyVetoException e) {
-//			e.printStackTrace();
-//		} finally {
-//			close(ps);
+		boolean flag=false;
+		try{
+			Session session = HibernateUtil.getSession();
+			System.out.println( " create  dao " +entity.getClass()+"  " + session.hashCode());
+			session.save(entity);
+			flag = true;
+		}catch (HibernateException e){
+			throw new DAOException("Exception in update dao test "+ e.getMessage());
 		}
 		return flag;
 	}
 
-	public Result update(Result entity) {
-
+	@Override
+	public Result update(Result entity) throws DAOException {
 		return null;
 	}
 
+	@Override
+	public Result find(int id) {
+		return null;
+	}
+
+
 	public Result findResultByTestUser(int testId, int userId) throws  DAOException {
 		Result result = new Result();
-//		PreparedStatement ps = null;
-//		Connection connection =  null;
-		try (PreparedStatement ps =connection.prepareStatement(SQL_SELECT_RESULT_BY_TEST_USER);){
-		//	connection=ConnectorDB.getInstance().getConnection();
-//			ps = connection.prepareStatement(SQL_SELECT_RESULT_BY_TEST_USER);
-			ps.setInt(1, testId);
-			ps.setInt(2, userId);
-			try(ResultSet resultSet = ps.executeQuery()) {
-				while (resultSet.next()) {
-					result.setTestId(resultSet.getInt("test_id"));
-					result.setUserId(resultSet.getInt("user_id"));
-					result.setResult(resultSet.getInt("result"));
-				}
-			}
-			logger.info("Result of the test for user found");
-		} catch (SQLException e) {
-            logger.error("Exception in the method findResultByTestUser"+ QuestionDAOImpl.class.getName());
-            throw new DAOException("Exception in the method findResultByTestUser "+e.getMessage());
-//		} catch (PropertyVetoException e) {
-//			e.printStackTrace();
-//		} finally {
-//			close(ps);
+		try{
+			Session session=HibernateUtil.getSession();
+			Result.IdResult id=new Result.IdResult(testId,userId);
+			String hql="SELECT R FROM Result R WHERE idResult=:id";
+			Query query=session.createQuery(hql);
+			query.setParameter("id",id);
+			result= (Result) query.uniqueResult();
+		}catch (HibernateException e){
+			throw new DAOException("Exception in findResultByTestUser dao test "+ e.getMessage());
 		}
 		return result;
 	}
 
-//	public void close(PreparedStatement ps) throws DAOException {
-//		try {
-//			if (ps != null) {
-//				ps.close();
-//                logger.info("Statement closed");
-//			}
-//		} catch (SQLException e) {
-//            logger.error("Exception close statement"+ ResultDAOImpl.class.getName());
-//            throw new DAOException("Exception close statement "+e.getMessage());
-//		}
-//	}
 }
