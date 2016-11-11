@@ -1,0 +1,27 @@
+<!--<?xml version='1.0' encoding='utf-8'?>-->
+<!--<!DOCTYPE hibernate-configuration PUBLIC-->
+    <!--"-//Hibernate/Hibernate Configuration DTD//EN"-->
+    <!--"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">-->
+<!--<hibernate-configuration>-->
+  <!--<session-factory>-->
+    <!--&lt;!&ndash;<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/testing</property>&ndash;&gt;-->
+    <!--&lt;!&ndash;<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>&ndash;&gt;-->
+    <!--&lt;!&ndash;<property name="hibernate.connection.password">15022014</property>&ndash;&gt;-->
+    <!--&lt;!&ndash;<property name="hibernate.connection.username">root</property>&ndash;&gt;-->
+    <!--&lt;!&ndash;<property name="hibernate.format_sql">true</property>&ndash;&gt;-->
+    <!--&lt;!&ndash;<property name="hibernate.show_sql">true</property>&ndash;&gt;-->
+    <!--&lt;!&ndash;&lt;!&ndash; DB schema will be updated if needed &ndash;&gt;&ndash;&gt;-->
+    <!--&lt;!&ndash;<property name="hbm2ddl.auto">update</property>&ndash;&gt;-->
+    <!--<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>-->
+    <!--<property name="hibernate.cache.use_query_cache">true</property>-->
+    <!--<property name="hibernate.cache.use_second_level_cache">true</property>-->
+    <!--<property name="net.sf.ehcache.configurationResourceName">/ehcache.xml</property>-->
+    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.User"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.Answer"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.Question"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.Result"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.Subject"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.Test"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.SubjectToStudent"/>&ndash;&gt;-->
+  <!--</session-factory>-->
+<!--</hibernate-configuration>-->
