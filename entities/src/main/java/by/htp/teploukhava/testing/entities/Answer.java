@@ -1,5 +1,5 @@
-package by.htp.telpoukhava.testing.entities;
-import by.htp.telpoukhava.testing.abst.EntityAbs;
+package by.htp.teploukhava.testing.entities;
+import by.htp.teploukhava.testing.abst.EntityAbs;
 
 import javax.persistence.*;
 

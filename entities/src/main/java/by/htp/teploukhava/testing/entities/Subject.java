@@ -1,6 +1,6 @@
-package by.htp.telpoukhava.testing.entities;
+package by.htp.teploukhava.testing.entities;
 
-import by.htp.telpoukhava.testing.abst.EntityAbs;
+import by.htp.teploukhava.testing.abst.EntityAbs;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 

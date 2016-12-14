@@ -1,4 +1,4 @@
-package by.htp.telpoukhava.testing.entities;
+package by.htp.teploukhava.testing.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
