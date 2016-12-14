@@ -1,29 +1,57 @@
 package by.htp.telpoukhava.testing.entities;
 
-import by.htp.telpoukhava.testing.abst.Entity;
+import by.htp.telpoukhava.testing.abst.EntityAbs;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import javax.persistence.*;
+import java.util.Collection;
 
 /**Class describes user, contains constructors,set and get methods
  *  for all fields of class and overring method  toString*/
-
-public class User extends Entity {
+@Entity
+@Table(name="user")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class User extends EntityAbs {
+	@Id
+	@Column(name="user_id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int userId;
+
+	@Column(name="name")
 	private String name;
+
+	@Column(name="surname")
 	private String surname;
+
+	@Column(name="login", unique = true)
 	private String login;
+
+	@Column(name="password")
 	private String password;
+
+	@Column(name="access")
 	private boolean access;
+
+	@OneToMany(cascade = CascadeType.ALL,fetch =FetchType.LAZY ,mappedBy = "user")
+	private Collection<SubjectToStudent> listSubjects;
+
+	@OneToMany(cascade = CascadeType.ALL,fetch =FetchType.LAZY, mappedBy = "user")
+	private Collection<Result> listResults;
 
 	public User() {
 
 	}
 
-	public User(int userId, String name, String surname, String login, String password, boolean access) {
-		this.userId = userId;
+	public User(String name, String surname, String login, String password,
+				boolean access, Collection<SubjectToStudent> listSubjects, Collection<Result> listResults) {
 		this.name = name;
 		this.surname = surname;
 		this.login = login;
 		this.password = password;
 		this.access = access;
+		this.listSubjects = listSubjects;
+		this.listResults = listResults;
 	}
 
 	public int getUserId() {
@@ -35,6 +63,7 @@ public class User extends Entity {
 	}
 
 	public String getName() {
+
 		return name;
 	}
 
@@ -74,7 +103,25 @@ public class User extends Entity {
 		this.access = access;
 	}
 
-	@Override
+    public Collection<SubjectToStudent> getListSubjects() {
+
+    	return listSubjects;
+    }
+
+    public void setListSubjects(Collection<SubjectToStudent> listSubjects) {
+
+    	this.listSubjects = listSubjects;
+    }
+
+    public Collection<Result> getListResults() {
+        return listResults;
+    }
+
+    public void setListResults(Collection<Result> listResults) {
+        this.listResults = listResults;
+    }
+
+    @Override
 	public String toString() {
 		return "User [userId=" + userId + ", name=" + name + ", surname=" + surname + ", login=" + login + ", password="
 				+ password + ", access=" + access + "]";
@@ -87,7 +134,7 @@ public class User extends Entity {
 
 		User user = (User) o;
 
-		if (userId != user.userId) return false;
+		//	if (userId != user.userId) return false;
 		if (access != user.access) return false;
 		if (name != null ? !name.equals(user.name) : user.name != null) return false;
 		if (surname != null ? !surname.equals(user.surname) : user.surname != null) return false;
@@ -98,12 +145,13 @@ public class User extends Entity {
 
 	@Override
 	public int hashCode() {
-		int result = userId;
-		result = 31 * result + (name != null ? name.hashCode() : 0);
+		int result = name.hashCode();
+		//	result = 31 * result + (name != null ? name.hashCode() : 0);
 		result = 31 * result + (surname != null ? surname.hashCode() : 0);
 		result = 31 * result + (login != null ? login.hashCode() : 0);
 		result = 31 * result + (password != null ? password.hashCode() : 0);
 		result = 31 * result + (access ? 1 : 0);
 		return result;
 	}
+
 }
