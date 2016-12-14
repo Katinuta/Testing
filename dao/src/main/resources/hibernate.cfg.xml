@@ -16,12 +16,12 @@
     <!--<property name="hibernate.cache.use_query_cache">true</property>-->
     <!--<property name="hibernate.cache.use_second_level_cache">true</property>-->
     <!--<property name="net.sf.ehcache.configurationResourceName">/ehcache.xml</property>-->
-    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.User"/>&ndash;&gt;-->
-    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.Answer"/>&ndash;&gt;-->
-    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.Question"/>&ndash;&gt;-->
-    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.Result"/>&ndash;&gt;-->
-    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.Subject"/>&ndash;&gt;-->
-    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.Test"/>&ndash;&gt;-->
-    <!--&lt;!&ndash;<mapping class="by.htp.telpoukhava.testing.entities.SubjectToStudent"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="User"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="Answer"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="Question"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="Result"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="Subject"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="Test"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<mapping class="SubjectToStudent"/>&ndash;&gt;-->
   <!--</session-factory>-->
 <!--</hibernate-configuration>-->

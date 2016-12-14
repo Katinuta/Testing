@@ -1,14 +1,13 @@
 package by.htp.teploukhava.testing.dao.impl;
 
-import by.htp.telpoukhava.testing.entities.Test;
 import by.htp.teploukhava.testing.dao.daointerface.AbstractDAO;
-import by.htp.teploukhava.testing.exception.DAOException;
-import by.htp.teploukhava.testing.managers.HibernateUtil;
+import by.htp.teploukhava.testing.entities.Test;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -17,92 +16,73 @@ import java.util.List;
  * constructor
  */
 
-
+@Repository
 public class TestDAOImpl implements AbstractDAO<Test> {
 
 	private static final Logger logger= LogManager.getLogger(TestDAOImpl.class);
-    private static TestDAOImpl instance;
 
- 	public TestDAOImpl(){
+	private SessionFactory sessionFactory;
 
+	public TestDAOImpl(){}
+
+	@Autowired
+	public TestDAOImpl(SessionFactory sessionFactory){
+		this.sessionFactory=sessionFactory;
 	}
-	public static synchronized TestDAOImpl getInstance(){
-		if(instance==null){
-			instance=new TestDAOImpl();
-		}
-		return instance;
-	}
+
 	@Override
 	public List<Test> findAll() {
 		return null;
 	}
 
 	@Override
-	public boolean delete(int id) throws DAOException {
-
+	public boolean delete(int id)  {
 		boolean flag=false;
-		try{
-			Session session = HibernateUtil.getSession();
-			Test test=(Test) session.get(Test.class,id);
-			System.out.println( " delete dao " +test.getClass().getName()+"  " + session.hashCode());
-			session.delete(test);
-			flag = true;
-		}catch (HibernateException e){
-			throw new DAOException("Exception in delete dao test "+ e.getMessage());
-		}
+		Test test=(Test) sessionFactory.getCurrentSession().get(Test.class,id);
+		sessionFactory.getCurrentSession().delete(test);
+		flag = true;
 		return flag;
 	}
 
 	@Override
-	public boolean create(Test entity) throws DAOException {
+	public boolean create(Test entity) {
 		boolean flag=false;
-		try{
-			Session session = HibernateUtil.getSession();
-			session.save(entity);
-			System.out.println( "create dao " +entity.getClass()+"  " + session.hashCode());
-			flag = true;
-		}catch (HibernateException e){
-			throw new DAOException("Exception in create dao test "+ e.getMessage());
-		}
+		sessionFactory.getCurrentSession().save(entity);
+		flag = true;
 		return flag;
 	}
 
 	@Override
-	public Test update(Test entity) throws DAOException {
-		try{
-			Session session = HibernateUtil.getSession();
-			System.out.println( " update dao " +entity.getClass()+"  " + session.hashCode());
-			session.merge(entity);
-		}catch (HibernateException e){
-			throw new DAOException("Exception in update dao test "+ e.getMessage());
-		}
+	public Test update(Test entity)  {
+		sessionFactory.getCurrentSession().merge(entity);
 		return entity;
 	}
 
 	@Override
-	public Test find(int id) throws DAOException {
-		try{
-			Session session=HibernateUtil.getSession();
-			return (Test) session.get(Test.class,id);
-		}catch (HibernateException e){
-			throw new DAOException("Exception in find dao test "+ e.getMessage());
-		}
-
+	public Test find(int id) {
+		return (Test) sessionFactory.getCurrentSession().get(Test.class,id);
 	}
 
-	public List<Test> findTestBySubjectId(int subjectId) throws DAOException {
-		List<Test> list=null;
-		try{
-			String hql="SELECT S.tests FROM Subject S WHERE S.subjectId=:subjectId";
-			Session session = HibernateUtil.getSession();
-			System.out.println( " findTestBySubjectId dao " +Test.class+"  " + session.hashCode());
-			Query query=session.createQuery(hql);
-			query.setParameter("subjectId",subjectId);
-			list= query.list();
-		}catch (HibernateException e){
-			throw new DAOException("Exception in findTestBySubjectId dao test "+ e.getMessage());
-		}
+	public List<Test> findTestBySubjectId(int subjectId)  {
+		String hql="SELECT S.tests FROM Subject S WHERE S.subjectId=:subjectId";
+		Query query=sessionFactory.getCurrentSession().createQuery(hql);
+		query.setParameter("subjectId",subjectId);
+		List<Test> list= query.list();
 		return list;
 	}
-
+	public List<Test> findSubjectTestByPage(int subjectId,int recordsPerPage, int numberPage) {
+		Query query = sessionFactory.getCurrentSession()
+				.createQuery("SELECT S.tests FROM Subject S WHERE S.subjectId=:subjectId");
+		query.setParameter("subjectId",subjectId);
+		query.setFirstResult((numberPage - 1) * recordsPerPage);
+		query.setMaxResults(recordsPerPage);
+		List<Test> list = query.list();
+		return list;
+	}
+	public long countRecords(int subjectId){
+		Query query=sessionFactory.getCurrentSession().createQuery("Select count(*) from Test T WHERE T.subject.subjectId=:subjectId");
+		query.setParameter("subjectId",subjectId);
+		long countPages= (long) query.uniqueResult();
+		return countPages;
+	}
 }

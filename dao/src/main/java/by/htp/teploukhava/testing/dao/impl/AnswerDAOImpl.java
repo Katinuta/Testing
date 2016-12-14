@@ -1,17 +1,15 @@
 package by.htp.teploukhava.testing.dao.impl;
 
-import by.htp.telpoukhava.testing.entities.Answer;
-import by.htp.telpoukhava.testing.entities.Question;
+import by.htp.teploukhava.testing.entities.Answer;
+import by.htp.teploukhava.testing.entities.Question;
 import by.htp.teploukhava.testing.dao.daointerface.AbstractDAO;
 import by.htp.teploukhava.testing.exception.DAOException;
 import by.htp.teploukhava.testing.managers.HibernateUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,68 +23,46 @@ public class AnswerDAOImpl implements AbstractDAO<Answer> {
 
     private static final Logger logger= LogManager.getLogger(AnswerDAOImpl.class);
 	final static String SQL_UPDATE_ANSWER = "UPDATE answer SET answer.content=?,answer.right_answer=? WHERE answer.answer_id=?";
-	private Connection connection;
-	private static AnswerDAOImpl instance;
 
-	private AnswerDAOImpl(){
+	private SessionFactory sessionFactory;
 
-	}
+	public AnswerDAOImpl(){}
 
-	public static synchronized AnswerDAOImpl getInstance(){
-		if(instance==null){
-			instance=new AnswerDAOImpl();
-		}
-		return instance;
+	@Autowired
+	public AnswerDAOImpl(SessionFactory sessionFactory){
+		this.sessionFactory=sessionFactory;
 	}
 
 
 	public List<Answer> findAll() {
-		Session session=HibernateUtil.getSession();
-		Query query=session.createQuery("FROM Answer ");
-		System.out.println( " delete dao " +Answer.class+"  " + session.hashCode());
+		Query query=sessionFactory.getCurrentSession().createQuery("FROM Answer ");
 		List<Answer> results=query.list();
 		return results;
 	}
 
 	@Override
-	public boolean delete(int id) throws DAOException {
+	public boolean delete(int id)  {
 		boolean flag=false;
-		try{
-			Session session = HibernateUtil.getSession();
-			Answer answer=(Answer) session.get(Answer.class,id);
-			System.out.println( " delete dao " +answer.getClass().getName()+"  " + session.hashCode());
-			session.delete(answer);
-			flag = true;
-		}catch (HibernateException e){
-			throw new DAOException("Exception in delete dao answer "+ e.getMessage());
-		}
+		Answer answer=(Answer) sessionFactory.getCurrentSession().get(Answer.class,id);
+		sessionFactory.getCurrentSession().delete(answer);
+		flag = true;
 		return flag;
 	}
 
 	@Override
-	public boolean create(Answer entity) throws DAOException {
+	public boolean create(Answer entity) {
 		boolean flag=false;
-		try{
-			Session session = HibernateUtil.getSession();
-			System.out.println( " create dao " +entity.getClass()+"  " + session.hashCode());
-			session.save(entity);
-			flag = true;
-		}catch (HibernateException e){
-			throw new DAOException("Exception in create dao answer "+ e.getMessage());
-		}
+		sessionFactory.getCurrentSession().save(entity);
+		flag = true;
 		return flag;
 	}
 
 	@Override
-	public Answer update(Answer entity) throws DAOException {
-		try{
-			Session session = HibernateUtil.getSession();
-			System.out.println( " update dao " +entity.getClass().getName()+"  " + session.hashCode());
-			session.saveOrUpdate(entity);
-			return entity;
-		}catch (HibernateException e){
-			throw new DAOException("Exception in update dao answer "+ e.getMessage());
-		}
+	public Answer update(Answer entity)  {
+		Session session = HibernateUtil.getSession();
+		System.out.println( " update dao " +entity.getClass().getName()+"  " + session.hashCode());
+		session.saveOrUpdate(entity);
+		return entity;
 	}
 
 	@Override
