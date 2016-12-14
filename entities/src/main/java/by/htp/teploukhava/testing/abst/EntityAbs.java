@@ -1,4 +1,4 @@
-package by.htp.telpoukhava.testing.abst;
+package by.htp.teploukhava.testing.abst;
 
 /**Basic class for entities of database*/
 
