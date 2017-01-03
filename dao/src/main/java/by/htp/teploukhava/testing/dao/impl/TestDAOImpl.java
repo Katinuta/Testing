@@ -45,9 +45,9 @@ public class TestDAOImpl implements AbstractDAO<Test> {
 	}
 
 	@Override
-	public boolean create(Test entity) {
+	public boolean create(Test entity)  {
 		boolean flag=false;
-		sessionFactory.getCurrentSession().save(entity);
+		sessionFactory.getCurrentSession().persist(entity);
 		flag = true;
 		return flag;
 	}
@@ -60,7 +60,10 @@ public class TestDAOImpl implements AbstractDAO<Test> {
 
 	@Override
 	public Test find(int id) {
-		return (Test) sessionFactory.getCurrentSession().get(Test.class,id);
+		//Test test=(Test) sessionFactory.getCurrentSession().get(Test.class,id);
+		String hql="SELECT t FROM Test t WHERE t.testId=:id";
+		Test test= (Test) sessionFactory.getCurrentSession().createQuery(hql).setParameter("id",id).uniqueResult();
+		return test;
 	}
 
 	public List<Test> findTestBySubjectId(int subjectId)  {

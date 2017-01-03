@@ -6,10 +6,12 @@ import by.htp.teploukhava.testing.entities.Subject;
 import by.htp.teploukhava.testing.entities.SubjectDTO;
 import by.htp.teploukhava.testing.entities.User;
 import by.htp.teploukhava.testing.exception.DAOException;
-import by.htp.teploukhava.testing.managers.HibernateUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.hibernate.*;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +38,10 @@ public class UserDAOImpl implements AbstractDAO<User> {
 
     @Autowired
     public UserDAOImpl(SessionFactory sessionFactory) {
-
         this.sessionFactory = sessionFactory;
-
     }
 
     public List<User> findAll() {
-
         Query query = sessionFactory.getCurrentSession().createQuery("FROM User ");
         List<User> listUsers = query.list();
         return listUsers;
@@ -68,13 +67,7 @@ public class UserDAOImpl implements AbstractDAO<User> {
 
     @Override
     public User update(User entity) throws DAOException {
-        try {
-            Session session = HibernateUtil.getSession();
-            System.out.println(" update dao " + entity.getClass().getName() + "  " + session.hashCode());
-            session.update(entity);
-        } catch (HibernateException e) {
-            throw new DAOException("Exception in create dao user " + e.getMessage());
-        }
+        sessionFactory.getCurrentSession().update(entity);
         return entity;
     }
 

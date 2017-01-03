@@ -7,6 +7,7 @@ import by.htp.teploukhava.testing.exception.DAOException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class QuestionDAOImpl implements AbstractDAO<Question>{
 		return null;
 	}
 
-	public boolean delete(int id) throws DAOException {
+	public boolean delete(int id)  {
 		boolean flag=false;
 		Question question=(Question) sessionFactory.getCurrentSession().get(Question.class,id);
 		sessionFactory.getCurrentSession().delete(question);
@@ -45,14 +46,17 @@ public class QuestionDAOImpl implements AbstractDAO<Question>{
 
 	@Override
 	public boolean create(Question entity) throws DAOException {
+
 		boolean flag=false;
-		sessionFactory.getCurrentSession().save(entity);
+		try{	sessionFactory.getCurrentSession().save(entity);}catch (HibernateException e){
+			throw  new DAOException(e.getMessage());
+		}
 		flag = true;
 		return flag;
 	}
 
 	@Override
-	public Question update(Question entity) throws DAOException {
+	public Question update(Question entity)  {
 		sessionFactory.getCurrentSession().saveOrUpdate(entity);
 		return entity;
 	}
