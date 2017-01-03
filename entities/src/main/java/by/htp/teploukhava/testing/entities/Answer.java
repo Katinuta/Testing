@@ -13,7 +13,7 @@ public class Answer extends EntityAbs {
 
     @Id
     @Column(name="answer_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int answerId;
 
     @Column(name="content")
@@ -72,7 +72,25 @@ public class Answer extends EntityAbs {
 				+ rightAnswer + "]";
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Answer)) return false;
 
+		Answer answer = (Answer) o;
 
+		if (answerId != answer.answerId) return false;
+		if (rightAnswer != answer.rightAnswer) return false;
+		if (content != null ? !content.equals(answer.content) : answer.content != null) return false;
+		return true;
 
+	}
+
+	@Override
+	public int hashCode() {
+		int result = answerId;
+		result = 31 * result + (content != null ? content.hashCode() : 0);
+		result = 31 * result + (rightAnswer ? 1 : 0);
+		return result;
+	}
 }

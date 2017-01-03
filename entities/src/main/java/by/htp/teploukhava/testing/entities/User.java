@@ -6,6 +6,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 
 /**Class describes user, contains constructors,set and get methods
  *  for all fields of class and overring method  toString*/
@@ -34,17 +35,17 @@ public class User extends EntityAbs {
 	private boolean access;
 
 	@OneToMany(cascade = CascadeType.ALL,fetch =FetchType.LAZY ,mappedBy = "user")
-	private Collection<SubjectToStudent> listSubjects;
+	private List<SubjectToStudent> listSubjects;
 
 	@OneToMany(cascade = CascadeType.ALL,fetch =FetchType.LAZY, mappedBy = "user")
-	private Collection<Result> listResults;
+	private List<Result> listResults;
 
 	public User() {
 
 	}
 
 	public User(String name, String surname, String login, String password,
-				boolean access, Collection<SubjectToStudent> listSubjects, Collection<Result> listResults) {
+				boolean access, List<SubjectToStudent> listSubjects, List<Result> listResults) {
 		this.name = name;
 		this.surname = surname;
 		this.login = login;
@@ -103,12 +104,12 @@ public class User extends EntityAbs {
 		this.access = access;
 	}
 
-    public Collection<SubjectToStudent> getListSubjects() {
+    public List<SubjectToStudent> getListSubjects() {
 
     	return listSubjects;
     }
 
-    public void setListSubjects(Collection<SubjectToStudent> listSubjects) {
+    public void setListSubjects(List<SubjectToStudent> listSubjects) {
 
     	this.listSubjects = listSubjects;
     }
@@ -117,7 +118,7 @@ public class User extends EntityAbs {
         return listResults;
     }
 
-    public void setListResults(Collection<Result> listResults) {
+    public void setListResults(List<Result> listResults) {
         this.listResults = listResults;
     }
 

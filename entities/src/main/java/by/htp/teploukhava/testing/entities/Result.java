@@ -52,11 +52,11 @@ public class Result extends EntityAbs {
 	@Column(name="result")
 	private int result;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false,cascade = CascadeType.ALL)
 	@JoinColumn(name="user_id",  nullable =false,updatable = false,insertable = false)
 	private User user;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false,cascade = CascadeType.ALL)
 	@JoinColumn(name="test_id", nullable =false,updatable = false,insertable = false)
 	private Test test;
 
