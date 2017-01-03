@@ -1,67 +1,41 @@
 package by.htp.teploukhava.testing.serviceimpl;
 
 
-import by.htp.telpoukhava.testing.entities.Subject;
 import by.htp.teploukhava.testing.AbstractService;
 import by.htp.teploukhava.testing.dao.impl.SubjectDAOImpl;
-import by.htp.teploukhava.testing.exception.DAOException;
-import by.htp.teploukhava.testing.managers.ConnectorDB;
+import by.htp.teploukhava.testing.entities.Subject;
+import by.htp.teploukhava.testing.entities.SubjectDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.PropertyVetoException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Created by Admin on 01.10.16.
  */
+@Service
+@Transactional
 public class SubjectService implements AbstractService<Subject> {
 
-    private static SubjectService instance;
+    private SubjectDAOImpl subjectDAOImpl;
 
-    private SubjectService(){}
 
-    public static synchronized SubjectService getInstance(){
-        if(instance==null){
-            instance=new SubjectService();
-        }
-        return instance;
+    @Autowired
+    public  SubjectService(SubjectDAOImpl subjectDAOImpl){
+        this.subjectDAOImpl=subjectDAOImpl;
     }
 
     @Override
-    public boolean create(Subject entity) throws SQLException, ServiceException {
+    public boolean create(Subject entity)  {
         boolean flag=false;
-        Connection connection =  null;
-        try {
-            connection= ConnectorDB.getInstance().getConnection();
-          //  connection.setAutoCommit(false);
-            SubjectDAOImpl.getInstance(connection).create(entity);
-          //  connection.commit();
-            flag=true;
-        } catch (SQLException |PropertyVetoException | DAOException e) {
-         //   connection.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            connection.close();
-        }
+        subjectDAOImpl.create(entity);
         return flag;
     }
 
     @Override
-    public List<Subject> findAll() throws SQLException, ServiceException {
-        Connection connection =  null;
-        List<Subject> list;
-        try {
-            connection= ConnectorDB.getInstance().getConnection();
-            connection.setAutoCommit(false);
-            list=SubjectDAOImpl.getInstance(connection).findAll();
-            connection.commit();
-        } catch (SQLException |PropertyVetoException | DAOException e) {
-            connection.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            connection.close();
-        }
+    public List<Subject> findAll() {
+        List<Subject> list= subjectDAOImpl.findAll();
         return list;
     }
 
@@ -73,22 +47,17 @@ public class SubjectService implements AbstractService<Subject> {
         return null;
     }
 
-    public Subject findSubjectById(int subjectId) throws SQLException, ServiceException {
-        Connection connection =  null;
-        Subject subject;
-
-        try {
-
-            connection= ConnectorDB.getInstance().getConnection();
-            connection.setAutoCommit(false);
-            subject=SubjectDAOImpl.getInstance(connection).findSubjectById(subjectId);
-            connection.commit();
-        } catch (SQLException |PropertyVetoException | DAOException e) {
-            connection.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            connection.close();
-        }
+    @Override
+    public Subject find(int id) {
+        Subject subject=subjectDAOImpl.find(id);
         return subject;
+    }
+    public List<SubjectDTO> findByPage(int recordsPerPage, int numberPage)  {
+        List<SubjectDTO> list= subjectDAOImpl.findByPage(recordsPerPage, numberPage);
+        return list;
+    }
+
+    public long countRecords(){
+        return subjectDAOImpl.countRecords();
     }
 }

@@ -1,35 +1,34 @@
 package by.htp.teploukhava.testing.serviceimpl;
 
 
-import by.htp.telpoukhava.testing.entities.Answer;
 import by.htp.teploukhava.testing.AbstractService;
 import by.htp.teploukhava.testing.dao.impl.AnswerDAOImpl;
-import by.htp.teploukhava.testing.exception.DAOException;
-import by.htp.teploukhava.testing.managers.ConnectorDB;
+import by.htp.teploukhava.testing.entities.Answer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.PropertyVetoException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Created by Admin on 02.10.16.
  */
+@Service
+@Transactional
 public class AnswerService implements AbstractService<Answer> {
-    private static AnswerService instance;
+    private AnswerDAOImpl answerDAOImpl;
 
-    private AnswerService(){}
-
-    public static synchronized AnswerService getInstance(){
-        if(instance==null){
-            instance=new AnswerService();
-        }
-        return instance;
+    public AnswerService(){}
+    @Autowired
+    public AnswerService(AnswerDAOImpl answerDAOImpl){
+        this.answerDAOImpl =answerDAOImpl;
     }
 
     @Override
-    public boolean create(Answer entity) throws ServiceException {
-        return false;
+    public boolean create(Answer entity)  {
+        boolean flag = false;
+
+        return flag;
     }
 
     @Override
@@ -45,37 +44,29 @@ public class AnswerService implements AbstractService<Answer> {
         return null;
     }
 
-    public List<Answer> findQuestionAnswers(int questionId) throws ServiceException, SQLException {
-        Connection connection =  null;
-        List<Answer> answerList;
-        try {
-            connection= ConnectorDB.getInstance().getConnection();
-            connection.setAutoCommit(false);
-            answerList= AnswerDAOImpl.getInstance(connection).findQuestionAnswers(questionId);
-            connection.commit();
-        } catch (SQLException |PropertyVetoException | DAOException e) {
-            connection.rollback();
-            throw new ServiceException(e.getMessage());
+    @Override
+    public Answer find(int id) throws ServiceException {
+        return null;
+    }
 
-        }finally {
-            connection.close();
-        }
+    public List<Answer> findQuestionAnswers(int questionId) throws ServiceException {
+        List<Answer> answerList= answerDAOImpl.findQuestionAnswers(questionId);
         return answerList;
     }
 
-    public void updateAnswer(Answer answer, String content, Boolean rightAnswer) throws SQLException, ServiceException {
-        Connection connection =  null;
-        try {
-            connection= ConnectorDB.getInstance().getConnection();
-            connection.setAutoCommit(false);
-            AnswerDAOImpl.getInstance(connection).updateAnswer(answer, content, rightAnswer);
-            connection.commit();
-        } catch (SQLException |PropertyVetoException | DAOException e) {
-            connection.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            connection.close();
-        }
+    public void updateAnswer(Answer answer, String content, Boolean rightAnswer) throws ServiceException {
+//        Connection connection =  null;
+//        try {
+//            connection= ConnectorDB.getInstance().getConnection();
+//            connection.setAutoCommit(false);
+//            AnswerDAOImpl.getInstance(connection).updateAnswer(answer, content, rightAnswer);
+//            connection.commit();
+//        } catch (SQLException |PropertyVetoException | DAOException e) {
+//            connection.rollback();
+//            throw new ServiceException(e.getMessage());
+//        } finally {
+//            connection.close();
+//        }
     }
 
 }

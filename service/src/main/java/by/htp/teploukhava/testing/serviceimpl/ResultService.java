@@ -1,49 +1,35 @@
 package by.htp.teploukhava.testing.serviceimpl;
 
 
-import by.htp.telpoukhava.testing.entities.*;
 import by.htp.teploukhava.testing.AbstractService;
-import by.htp.teploukhava.testing.exception.DAOException;
-import by.htp.teploukhava.testing.managers.ConnectorDB;
-import by.htp.teploukhava.testing.dao.impl.*;
+import by.htp.teploukhava.testing.dao.impl.ResultDAOImpl;
+import by.htp.teploukhava.testing.entities.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.PropertyVetoException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Created by Admin on 02.10.16.
  */
+@Service
+@Transactional
 public class ResultService implements AbstractService<Result> {
 
-    private static ResultService instance;
+    private ResultDAOImpl resultDAOImpl;
 
-    private ResultService(){}
-
-    public static synchronized ResultService getInstance(){
-        if(instance==null){
-            instance=new ResultService();
-        }
-        return instance;
+    public ResultService(){}
+    @Autowired
+    public ResultService(ResultDAOImpl resultDAOImpl){
+        this.resultDAOImpl=resultDAOImpl;
     }
 
     @Override
-    public boolean create(Result entity) throws SQLException, ServiceException {
+    public boolean create(Result entity)  {
         boolean flag=false;
-        Connection connection =  null;
-        try {
-            connection= ConnectorDB.getInstance().getConnection();
-            connection.setAutoCommit(false);
-            ResultDAOImpl.getInstance(connection).create(entity);
-            connection.commit();
-            flag=true;
-        } catch (SQLException |PropertyVetoException | DAOException e) {
-            connection.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            connection.close();
-        }
+        resultDAOImpl.create(entity);
+        flag=true;
         return flag;
     }
 
@@ -62,20 +48,13 @@ public class ResultService implements AbstractService<Result> {
         return null;
     }
 
-    public Result findResultByTestUser(int testId, int userId) throws SQLException, ServiceException {
-        Connection connection =  null;
-        Result result;
-        try {
-            connection= ConnectorDB.getInstance().getConnection();
-            connection.setAutoCommit(false);
-            result= ResultDAOImpl.getInstance(connection).findResultByTestUser(testId, userId);
-            connection.commit();
-        } catch (SQLException |PropertyVetoException | DAOException e) {
-            connection.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            connection.close();
-        }
+    @Override
+    public Result find(int id)  {
+        return null;
+    }
+
+    public Result findResultByTestUser(int testId, int userId)  {
+        Result result= resultDAOImpl.findResultByTestUser(testId, userId);
         return result;
 
     }

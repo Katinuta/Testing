@@ -1,51 +1,36 @@
 package by.htp.teploukhava.testing.serviceimpl;
 
 
-import by.htp.telpoukhava.testing.entities.Subject;
-import by.htp.telpoukhava.testing.entities.User;
 import by.htp.teploukhava.testing.AbstractService;
 import by.htp.teploukhava.testing.dao.impl.UserDAOImpl;
-import by.htp.teploukhava.testing.exception.DAOException;
-import by.htp.teploukhava.testing.managers.ConnectorDB;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import by.htp.teploukhava.testing.entities.Subject;
+import by.htp.teploukhava.testing.entities.SubjectDTO;
+import by.htp.teploukhava.testing.entities.User;
+import by.htp.teploukhava.testing.util.LoginLogic;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.PropertyVetoException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
-
 /**
  * Created by Admin on 01.10.16.
  */
+@Service
+@Transactional
 public class UserService implements AbstractService<User> {
-    private static UserService instance;
-    private static final Logger logger= LogManager.getLogger(UserService.class);
-    private UserService(){}
 
-    public static synchronized UserService getInstance(){
-        if(instance==null){
-            instance=new UserService();
-        }
-        return instance;
+
+    private UserDAOImpl userDAOImpl;
+
+    @Autowired
+    public UserService(UserDAOImpl userDAOImpl){
+        this.userDAOImpl=userDAOImpl;
     }
 
     @Override
-    public boolean create(User entity) throws SQLException, ServiceException {
+    public boolean create(User entity)  {
         boolean flag=false;
-        Connection connection =  null;
-        try {
-            connection= ConnectorDB.getInstance().getConnection();
-            connection.setAutoCommit(false);
-            UserDAOImpl.getInstance(connection).create(entity);
-            connection.commit();
-            flag=true;
-        } catch (SQLException |PropertyVetoException | DAOException e) {
-            connection.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            connection.close();
-        }
+        userDAOImpl.create(entity);
         return flag;
     }
 
@@ -64,39 +49,42 @@ public class UserService implements AbstractService<User> {
         return null;
     }
 
-    public List<Subject> findUserSubject(int userId) throws SQLException, ServiceException {
-        List<Subject> list;
-        Connection connection =  null;
-        try {
-            connection= ConnectorDB.getInstance().getConnection();
-           // connection.setAutoCommit(false);
-            list=UserDAOImpl.getInstance(connection).findUserSubject(userId);
-           // connection.commit();
-        } catch (SQLException |PropertyVetoException | DAOException e) {
-           // connection.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            connection.close();
-        }
+    @Override
+    public User find(int id) {
+        User user=userDAOImpl.find(id);
+
+        return user;
+    }
+
+    public List<Subject> findUserSubject(User user)  {
+        List<Subject> list= userDAOImpl.findUserSubject(user.getUserId());
         return list;
     }
 
-    public User findUserByLogin(String login) throws SQLException, ServiceException {
+    public User findUserByLogin(String login)  {
 
-        Connection connection=null ;
-        User user=null;
-        try {
-            connection= ConnectorDB.getInstance().getConnection();
-          //  connection.setAutoCommit(false);
-            user=UserDAOImpl.getInstance(connection).findUserByLogin(login);
-           // connection.commit();
-        } catch (SQLException |PropertyVetoException | DAOException e) {
-           //connection.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            connection.close();
-
-        }
+        User user=userDAOImpl.findUserByLogin(login);
         return user;
+
+    }
+
+    public boolean checkUser(String login, String password)  {
+
+        User user=userDAOImpl.findUserByLogin(login);
+        if(LoginLogic.checkLogin(user,login,password)){
+            return true;
+        }
+        return false;
+
+    }
+    public List<SubjectDTO> findUserSubjectPage(int userId, int numberPage, int recordsPerPage)  {
+
+        List<SubjectDTO> list= userDAOImpl.findUserSubjectPage(userId,numberPage,recordsPerPage);
+        return list;
+
+    }
+
+    public long countUserSubject(int userId){
+        return userDAOImpl.countUserSubject(userId);
     }
 }
