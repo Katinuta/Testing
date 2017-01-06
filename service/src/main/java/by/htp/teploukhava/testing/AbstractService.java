@@ -2,7 +2,6 @@ package by.htp.teploukhava.testing;
 
 import by.htp.teploukhava.testing.serviceimpl.ServiceException;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -10,9 +9,9 @@ import java.util.List;
  */
 public interface AbstractService<T> {
 
-    boolean create(T entity) throws ServiceException, SQLException, ServiceException;
-    List<T> findAll() throws ServiceException, SQLException, ServiceException;
-    void delete(int id) throws ServiceException, SQLException, ServiceException;
+    boolean create(T entity) throws ServiceException;
+    List<T> findAll() throws ServiceException;
+    void delete(int id) throws ServiceException;
     T update(T entity)throws ServiceException;
-
+    T find(int id) throws ServiceException;
 }
