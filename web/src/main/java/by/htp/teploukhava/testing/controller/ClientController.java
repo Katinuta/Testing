@@ -1,4 +1,4 @@
-package by.htp.teploukhava.testing.controler;
+package by.htp.teploukhava.testing.controller;
 
 import by.htp.teploukhava.testing.entities.*;
 import by.htp.teploukhava.testing.serviceimpl.ResultService;
@@ -47,6 +47,9 @@ public class ClientController {
         UserDetails userDetails= (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user= userService.findUserByLogin(userDetails.getUsername());
         List<SubjectDTO> listSubject=userService.findUserSubjectPage(user.getUserId(),currentPage,recordsPerPage);
+        for (SubjectDTO subject:listSubject ) {
+            System.out.println(subject.toString());
+        }
         long countPages= (long) Math.ceil((double) userService.countUserSubject(user.getUserId())/recordsPerPage);
         List listPages = new ArrayList();
         int i=1;
@@ -68,10 +71,8 @@ public class ClientController {
     public String getSubjectTests(@ModelAttribute("user") User user,
                                   @RequestParam(value = "subjectId") int subjectId,
                                   @RequestParam(value = "currentPage") int currentPage,ModelMap modelMap){
-        if(!modelMap.containsAttribute("subject")){
             Subject subject=subjectService.find(subjectId);
             modelMap.addAttribute("subject",subject);
-        }
         List<Test> testList= testService.findSubjectTestByPage(subjectId,recordsPerPage,currentPage);
         long countPages=(long) Math.ceil((double) testService.countRecords(subjectId)/recordsPerPage);
         List listPages = new ArrayList();
@@ -80,6 +81,7 @@ public class ClientController {
             listPages.add(i);
             i++;
         }
+        modelMap.addAttribute("resultList",getResults(testList,user.getUserId()));
         modelMap.addAttribute("testList", testList);
         modelMap.addAttribute("listPages", listPages);
         return "client/test";
@@ -126,5 +128,14 @@ public class ClientController {
         resultService.create(result);
         modelMap.addAttribute("result",result);
         return "client/result";
+    }
+
+    public List<Result> getResults(List<Test> testList,int userId){
+        List<Result> resultList=new ArrayList<Result>();
+        for (Test test:testList) {
+            Result result=resultService.findResultByTestUser(test.getTestId(),userId);
+            resultList.add(result);
+        }
+        return resultList;
     }
 }
