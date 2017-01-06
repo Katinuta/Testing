@@ -24,11 +24,6 @@ import java.util.List;
 public class TestService implements AbstractService<Test> {
     @Autowired
     private TestDAOImpl testDAOImpl;
-    @Autowired
-    private QuestionDAOImpl questionDAOImpl;
-    @Autowired
-    private AnswerDAOImpl answerDAOImpl;
-
     public TestService(){}
 
     public TestService(TestDAOImpl testDAOImpl){
@@ -70,47 +65,6 @@ public class TestService implements AbstractService<Test> {
         return listTest;
     }
 
-    public Test findTestBySubjectIdAndName(int subjectId,String name) {
-       Test test=null;
-        return test;
-    }
-
-
-    public void updateNameTestById(Test test, String name) throws ServiceException, SQLException {
-        Connection connection =  null;
-//        try {
-//            connection= ConnectorDB.getInstance().getConnection();
-//            connection.setAutoCommit(false);
-//            TestDAOImpl.getInstance().updateNameTestById(test,name);
-//            connection.commit();
-//        } catch (SQLException |PropertyVetoException | DAOException e) {
-//            connection.rollback();
-//            throw new ServiceException(e.getMessage());
-//        } finally {
-//            connection.close();
-//        }
-
-    }
-    public void updateTest(Test test, List<Question> questionList,List<Answer> answerList) throws SQLException, ServiceException {
-
-            testDAOImpl.update(test);
-            Iterator<Question> itQuestion=questionList.iterator();
-//
-//            while (itQuestion.hasNext()){
-//                Question question =itQuestion.next();
-//                QuestionDAOImpl.getInstance(connection).update(question);
-//                Iterator<Answer> itAnswer=answerList.iterator();
-//
-//                while (itAnswer.hasNext()){
-//                    Answer answer=itAnswer.next();
-//                    if(question.getQuestionId()==answer.getQuestionId()){
-//                        AnswerDAOImpl.getInstance(connection).update(answer);
-//                    }
-//                }
-//            }
-
-
-    }
     public List<Test> findSubjectTestByPage(int subjectId,int recordsPerPage, int numberPage)  {
         List<Test> list= testDAOImpl.findSubjectTestByPage(subjectId,recordsPerPage, numberPage);
         return list;
