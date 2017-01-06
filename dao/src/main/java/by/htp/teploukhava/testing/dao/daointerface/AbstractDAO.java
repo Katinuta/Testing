@@ -1,6 +1,6 @@
 package by.htp.teploukhava.testing.dao.daointerface;
 
-import by.htp.teploukhava.testing.abst.EntityAbs;
+import by.htp.teploukhava.testing.entities.EntityAbs;
 import by.htp.teploukhava.testing.exception.DAOException;
 
 import java.util.List;

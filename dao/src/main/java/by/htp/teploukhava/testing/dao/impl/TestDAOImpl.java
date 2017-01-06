@@ -60,7 +60,6 @@ public class TestDAOImpl implements AbstractDAO<Test> {
 
 	@Override
 	public Test find(int id) {
-		//Test test=(Test) sessionFactory.getCurrentSession().get(Test.class,id);
 		String hql="SELECT t FROM Test t WHERE t.testId=:id";
 		Test test= (Test) sessionFactory.getCurrentSession().createQuery(hql).setParameter("id",id).uniqueResult();
 		return test;

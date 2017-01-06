@@ -21,7 +21,6 @@ import java.util.List;
 public class AnswerDAOImpl implements AbstractDAO<Answer> {
 
     private static final Logger logger= LogManager.getLogger(AnswerDAOImpl.class);
-	final static String SQL_UPDATE_ANSWER = "UPDATE answer SET answer.content=?,answer.right_answer=? WHERE answer.answer_id=?";
 
 	private SessionFactory sessionFactory;
 
@@ -72,24 +71,11 @@ public class AnswerDAOImpl implements AbstractDAO<Answer> {
 		return answer;
 	}
 
-
 	public List<Answer> findQuestionAnswers(int questionId) {
         Criteria criteria=sessionFactory.getCurrentSession().createCriteria(Question.class);
         criteria.add(Restrictions.eq("question.questionId",questionId));
         List<Answer>list=criteria.list();
 		return list;
-	}
-
-	public int updateAnswer(Answer answer, String content, Boolean rightAnswer) throws DAOException {
-		int colCount = 0;
-//	PreparedStatement ps=sessionFactory.getCurrentSession()..prepareStatement(SQL_UPDATE_ANSWER))
-//			ps = connection.prepareStatement(SQL_UPDATE_ANSWER);
-//			ps.setString(1, content);
-//			ps.setBoolean(2, rightAnswer);
-//			ps.setInt(3, answer.getAnswerId());
-//			colCount = ps.executeUpdate();
-//            logger.info("Answers for question updated");
-		return colCount;
 	}
 
 }
