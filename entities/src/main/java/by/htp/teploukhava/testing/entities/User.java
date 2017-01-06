@@ -1,6 +1,5 @@
 package by.htp.teploukhava.testing.entities;
 
-import by.htp.teploukhava.testing.abst.EntityAbs;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -43,7 +42,15 @@ public class User extends EntityAbs {
 	public User() {
 
 	}
+	public User(String name, String surname, String login, String password,
+				boolean access) {
+		this.name = name;
+		this.surname = surname;
+		this.login = login;
+		this.password = password;
+		this.access = access;
 
+	}
 	public User(String name, String surname, String login, String password,
 				boolean access, List<SubjectToStudent> listSubjects, List<Result> listResults) {
 		this.name = name;

@@ -1,10 +1,5 @@
 package by.htp.teploukhava.testing.entities;
 
-import by.htp.teploukhava.testing.abst.EntityAbs;
-
-import java.util.Collection;
-import java.util.List;
-
 /**Class describes subject, contains constructors,set and get methods
  *  for all fields of class and overring method  toString*/
 
@@ -18,9 +13,9 @@ public class SubjectDTO extends EntityAbs {
 	public SubjectDTO() {
 	}
 
-	public SubjectDTO(String name, List<Test> tests, Collection<SubjectToStudent> listUsers) {
+	public SubjectDTO(int subjectId, String name) {
 		this.name = name;
-
+		this.subjectId= subjectId;
 	}
 
 	public int getSubjectId() {

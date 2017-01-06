@@ -1,9 +1,6 @@
 package by.htp.teploukhava.testing.entities;
 
-import by.htp.teploukhava.testing.abst.EntityAbs;
-
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.List;
 
 /**Class describes test, contains constructors,set and get methods

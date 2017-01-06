@@ -1,6 +1,5 @@
 package by.htp.teploukhava.testing.entities;
 
-import by.htp.teploukhava.testing.abst.EntityAbs;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 

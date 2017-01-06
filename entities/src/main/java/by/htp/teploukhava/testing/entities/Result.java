@@ -1,7 +1,5 @@
 package by.htp.teploukhava.testing.entities;
 
-import by.htp.teploukhava.testing.abst.EntityAbs;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
