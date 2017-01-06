@@ -1,4 +1,4 @@
-package by.htp.teploukhava.testing.controler;
+package by.htp.teploukhava.testing.controller;
 
 import by.htp.teploukhava.testing.entities.User;
 import by.htp.teploukhava.testing.serviceimpl.UserService;
@@ -18,6 +18,8 @@ import java.security.Principal;
 public class UserController {
 
     private UserService userService;
+
+    public UserController(){}
 
     @Autowired
     public UserController(UserService userService){
@@ -50,14 +52,15 @@ public class UserController {
         }else{
             model.addObject("errorMsg","У вас нет доступа  к этой странице");
         }
-        model.setViewName("/accessDenied");
+        model.setViewName("accessDenied");
         return model;
     }
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ModelAndView login(@RequestParam(value = "error", required = false) String error,
-                              @RequestParam(value = "logout", required = false) String logout) {
+    public String login(@RequestParam(value = "error", required = false) String error,
+                              @RequestParam(value = "logout", required = false) String logout,
+                              ModelAndView model) {
 
-        ModelAndView model = new ModelAndView();
+    //    ModelAndView model = new ModelAndView();
         if (error != null) {
             model.addObject("error", "Invalid username and password!");
         }
@@ -65,9 +68,8 @@ public class UserController {
         if (logout != null) {
             model.addObject("msg", "You've been logged out successfully.");
         }
-        model.setViewName("login");
-
-        return model;
+     //   model.setViewName("login");
+        return "login";
 
     }
 }
