@@ -1,4 +1,4 @@
-package by.htp.teploukhava.testing.filter;
+package by.htp.teploukhava.testing.security;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;

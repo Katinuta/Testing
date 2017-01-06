@@ -1,4 +1,4 @@
-package by.htp.teploukhava.testing.filter;
+package by.htp.teploukhava.testing.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;

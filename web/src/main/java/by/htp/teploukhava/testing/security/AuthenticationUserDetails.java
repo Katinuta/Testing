@@ -1,4 +1,4 @@
-package by.htp.teploukhava.testing.filter;
+package by.htp.teploukhava.testing.security;
 
 import by.htp.teploukhava.testing.dao.impl.UserDAOImpl;
 import by.htp.teploukhava.testing.entities.User;
